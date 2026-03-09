@@ -5,7 +5,7 @@ import mongoose from "mongoose";
 import dotenv from "dotenv"; 
 import dbconnect from "./config/db.js";
 // import {productRouter} from "./routes/productRoute.js";
-import { storeRouter } from "./routes/storeroute.js";
+import storeRoute from "./routes/storeroute.js";
 const app = express();
 dotenv.config();
 app.use(expressLayouts);
