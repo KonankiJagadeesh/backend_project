@@ -3,6 +3,7 @@ import productModel from "../models/productModel.js";
 const getProducts = async (req, res) => {
   try {
     const products = await productModel.find();
+    console.log("Fetched products from DB:", products);
     res.render("products/index", { products });
   } catch (err) {
     console.error("Error fetching products:", err.message);
@@ -56,15 +57,6 @@ const saveProduct = async (req, res) => {
     console.error("Error updating product:", err.message);
     res.status(500).render("error", { message: "Failed to update product" });
   }
-};
-
-export {
-  getProducts,
-  addProduct,
-  addProductForm,
-  deleteProduct,
-  editProductForm,
-  saveProduct
 };
 
 export {
