@@ -29,10 +29,16 @@ app.use("/products", productRouter);
 // app.use("/users", userRouter);
 
 const startServer = async () => {
-  await dbConnect();
-  app.listen(5000, () => {
-     console.log("Server Started on http://localhost:5000");
-  });
+  try {
+    await dbConnect();
+    const PORT = process.env.PORT || 5000;
+    app.listen(PORT, () => {
+       console.log(`Server Started on http://localhost:${PORT}`);
+    });
+  } catch (err) {
+    console.error("Failed to start server:", err.message);
+    process.exit(1);
+  }
 };
 
 startServer()
