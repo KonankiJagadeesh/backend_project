@@ -1,22 +1,43 @@
-import productModel from "../models/productModel.js";  
+import productModel from "../models/productModel.js";
 
-const getproducts =async (req,res) =>{
-const products = await productModel.find();
-res.render("product/index",{products});
+const getProducts = async (req, res) => {
+  const products = await productModel.find();
+  res.render("products/index", { products });
 };
 
-const addproduct =async (req,res) =>{
-    const product =req.body;
-    await productModel.create(product);
-    res.redirect("/products");
-}
+const addProduct = async (req, res) => {
+  const product = req.body;
+  await productModel.create(product);
+  res.redirect("/products");
+};
 
-const addProductform =async(req,res) =>{
-    res.render("product/add");
-}
+const addProductForm = async (req, res) => {
+  res.render("products/add");
+};
 
+const deleteProduct = async (req, res) => {
+  const id = req.params.id;
+  await productModel.findByIdAndDelete(id);
+  res.redirect("/products");
+};
 
+const editProductForm = async (req, res) => {
+  const id = req.params.id;
+  const product = await productModel.findOne({ _id: id });
+  res.render("products/edit", { product });
+};
 
+const saveProduct = async (req, res) => {
+  const id = req.params.id;
+  await productModel.findByIdAndUpdate(id, req.body);
+  res.redirect("/products")
+};
 
-
-export {getproducts, addproduct , addProductform};
+export {
+  getProducts,
+  addProduct,
+  addProductForm,
+  deleteProduct,
+  editProductForm,
+  saveProduct
+};

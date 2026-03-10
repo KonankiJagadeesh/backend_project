@@ -1,34 +1,23 @@
 *{
-    margin:0px;
-
+    margin:0px
 }
-
-
 .header{
-    display:flex;
+    display: flex;
     justify-content: space-between;
-    background-color: rgb(30, 30, 19);
+    background-color: teal;
     color:white;
-    padding: 10px;
-
+    padding:10px
 }
+
 .header li{
-    display:inline-block;
+    display: inline-block;
     padding: 5px;
     font-size: 20px;
 }
 .footer{
     background-color: silver;
-    padding:5px;
-    color: red;
-    text-align: center;
-    
-
+    padding: 5px;
 }
-
-
-
-
 .row {
     display: flex;
     /* justify-content: space-around; */
