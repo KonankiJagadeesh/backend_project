@@ -17,5 +17,3 @@ productRouter.get("/:id/edit", editProductForm);
 productRouter.post("/:id/save", saveProduct);
 
 export default productRouter;
-
-
