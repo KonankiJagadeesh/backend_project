@@ -4,7 +4,6 @@ import session from "express-session";
 import cors from "cors";
 import dotenv from "dotenv";
 import { authenticateAdmin } from "./middleware/auth.js";
-import mongoose from "mongoose";
 import dbConnect from "./config/db.js";
 import productRouter from "./routes/productRoute.js";
 import storeRouter from "./routes/storeRoute.js";

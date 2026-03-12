@@ -7,6 +7,9 @@
 </head>
 <body>
     <h2>Registration Form</h2>
+    <% if (typeof error !== 'undefined') { %>
+      <p style="color:red;"><%= error %></p>
+    <% } %>
     <form action="/auth/register" method="POST">
         <p><input type="text" name="name" placeholder="Name"></p>
         <p><input type="text" name="email" placeholder="Email"></p>

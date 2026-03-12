@@ -17,9 +17,6 @@
 .footer{
     background-color: silver;
     padding: 5px;
-    color:red;
-    text-align: center;
-
 }
 .row {
     display: flex;
