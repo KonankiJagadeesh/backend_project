@@ -1,80 +1,74 @@
 import userModel from "../models/userModel.js";
+import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
-
-// Render login page
-const login = (req, res) => {
+const SECRET = "mysecret"
+const login = async (req, res) => {
   res.render("auth/login");
 };
-
-// Handle login form submission
 const validateUser = async (req, res) => {
-  try {
-    const { email, password } = req.body;
-    const user = await userModel.findOne({ email });
-    if (!user) {
-      return res.status(401).render("auth/login", { error: "Invalid credentials" });
+  const { email, password } = req.body;
+  const user = await userModel.findOne({ email, role: "admin" });
+  if (user) {
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (isMatch) {
+      req.session.user = user;
+      res.redirect("/");
+    } else {
+      res.redirect("/auth/login");
     }
-
-    const match = await bcrypt.compare(password, user.password);
-    if (!match) {
-      return res.status(401).render("auth/login", { error: "Invalid credentials" });
-    }
-
-    // save minimal user data in session
-    req.session.user = {
-      id: user._id,
-      name: user.name,
-      email: user.email,
-      role: user.role,
-    };
-
-    res.redirect("/");
-  } catch (err) {
-    console.error("Error during user validation:", err.message);
-    res.status(500).render("error", { message: "An error occurred during login" });
+  } else {
+    res.redirect("/auth/login");
   }
 };
-
-// Render registration page
-const register = (req, res) => {
+const register = async (req, res) => {
   res.render("auth/register");
 };
 
-// Handle registration form submission
 const registerUser = async (req, res) => {
-  try {
-    const { name, email, password } = req.body;
-    const existing = await userModel.findOne({ email });
-    if (existing) {
-      return res.status(400).render("auth/register", { error: "Email already in use" });
+  const body = req.body;
+  const hashedPassword = await bcrypt.hash(body.password, 10);
+  body.password = hashedPassword;
+  await userModel.create(body);
+  res.redirect("/auth/login");
+};
+
+const signup = async (req, res) => {
+  const { name, email, password } = req.body;
+  const hashedPassword = await bcrypt.hash(password, 10);
+  // password = hashedPassword;
+  const response = await userModel.create({
+    name,
+    email,
+    password: hashedPassword,
+  });
+  res.json(response);
+};
+
+const signin = async (req, res) => {
+  const { email, password } = req.body;
+  const user = await userModel.findOne({ email });
+  if (user) {
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (isMatch) {
+      const userObj = {
+        name:user.name,
+        email:user.email,
+        role:user.role,
+      };
+      const token = jwt.sign(userObj, SECRET, { expiresIn: "1h" });
+      res.json({ ...userObj, token });
+    } else {
+      res.json({ error: "Invalid Password" });
     }
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const newUser = await userModel.create({ name, email, password: hashedPassword });
-
-    // log the user in automatically
-    req.session.user = {
-      id: newUser._id,
-      name: newUser.name,
-      email: newUser.email,
-      role: newUser.role,
-    };
-
-    res.redirect("/");
-  } catch (err) {
-    console.error("Error registering user:", err.message);
-    res.status(500).render("error", { message: "An error occurred during registration" });
+  } else {
+    res.json({ error: "Invalid User" });
   }
 };
 
-// Log out and destroy session
 const logout = (req, res) => {
-  req.session.destroy((err) => {
-    if (err) {
-      console.error("Session destruction error:", err);
-    }
-    res.redirect("/auth/login");
-  });
+  req.session.destroy();
+  res.locals.user = null;
+  res.render("auth/login");
 };
 
-export { login, validateUser, register, registerUser, logout };
+export { login, validateUser, register, registerUser, logout, signup, signin };
